@@ -171,47 +171,47 @@ type innertubeClient struct {
 
 // client info for the innertube API
 type ClientInfo struct {
-	name           string
-	key            string
-	version        string
-	userAgent      string
-	androidVersion int
-	deviceModel    string
+	Name           string
+	Key            string
+	Version        string
+	UserAgent      string
+	AndroidVersion int
+	DeviceModel    string
 }
 
 var (
 	// WebClient, better to use Android client but go ahead.
 	WebClient = ClientInfo{
-		name:      "WEB",
-		version:   "2.20220801.00.00",
-		key:       "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
-		userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+		Name:      "WEB",
+		Version:   "2.20220801.00.00",
+		Key:       "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+		UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
 	}
 
 	// AndroidClient, download go brrrrrr.
 	AndroidClient = ClientInfo{
-		name:      "ANDROID",
-		version:   "20.10.38",
-		key:       "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w",
-		userAgent: "com.google.android.youtube/20.10.38 (Linux; U; Android 11) gzip",
+		Name:      "ANDROID",
+		Version:   "20.10.38",
+		Key:       "AIzaSyA8eiZmM1FaDVjRy-df2KTyQ_vz_yYM39w",
+		UserAgent: "com.google.android.youtube/20.10.38 (Linux; U; Android 11) gzip",
 		// androidVersion removed to avoid PoToken requirement (android_sdkless variant)
 	}
 
 	// IOSClient Client based brrrr.
 	IOSClient = ClientInfo{
-		name:        "IOS",
-		version:     "19.45.4",
-		key:         "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
-		userAgent:   "com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 18_1_0 like Mac OS X;)",
-		deviceModel: "iPhone16,2",
+		Name:        "IOS",
+		Version:     "19.45.4",
+		Key:         "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8",
+		UserAgent:   "com.google.ios.youtube/19.45.4 (iPhone16,2; U; CPU iOS 18_1_0 like Mac OS X;)",
+		DeviceModel: "iPhone16,2",
 	}
 
 	// EmbeddedClient, not really tested.
 	EmbeddedClient = ClientInfo{
-		name:      "WEB_EMBEDDED_PLAYER",
-		version:   "1.19700101",
-		key:       "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8", // seems like same key works for both clients
-		userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+		Name:      "WEB_EMBEDDED_PLAYER",
+		Version:   "1.19700101",
+		Key:       "AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8", // seems like same key works for both clients
+		UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
 	}
 )
 
@@ -230,7 +230,7 @@ func (c *Client) videoDataByInnertube(ctx context.Context, id string) ([]byte, e
 		},
 	}
 
-	return c.httpPostBodyBytes(ctx, "https://www.youtube.com/youtubei/v1/player?key="+c.client.key, data)
+	return c.httpPostBodyBytes(ctx, "https://www.youtube.com/youtubei/v1/player?key="+c.client.Key, data)
 }
 
 func (c *Client) transcriptDataByInnertube(ctx context.Context, id string, lang string) ([]byte, error) {
@@ -239,7 +239,7 @@ func (c *Client) transcriptDataByInnertube(ctx context.Context, id string, lang 
 		Params:  transcriptVideoID(id, lang),
 	}
 
-	return c.httpPostBodyBytes(ctx, "https://www.youtube.com/youtubei/v1/get_transcript?key="+c.client.key, data)
+	return c.httpPostBodyBytes(ctx, "https://www.youtube.com/youtubei/v1/get_transcript?key="+c.client.Key, data)
 }
 
 func randString(alphabet string, sz int) string {
@@ -275,11 +275,11 @@ func prepareInnertubeContext(clientInfo ClientInfo) inntertubeContext {
 			HL:                "en",
 			GL:                "US",
 			TimeZone:          "UTC",
-			DeviceModel:       clientInfo.deviceModel,
-			ClientName:        clientInfo.name,
-			ClientVersion:     clientInfo.version,
-			AndroidSDKVersion: clientInfo.androidVersion,
-			UserAgent:         clientInfo.userAgent,
+			DeviceModel:       clientInfo.DeviceModel,
+			ClientName:        clientInfo.Name,
+			ClientVersion:     clientInfo.Version,
+			AndroidSDKVersion: clientInfo.AndroidVersion,
+			UserAgent:         clientInfo.UserAgent,
 			VisitorData:       randomVisitorData("US"),
 		},
 	}
@@ -340,7 +340,7 @@ func (c *Client) GetPlaylistContext(ctx context.Context, url string) (*Playlist,
 	}
 
 	data := prepareInnertubePlaylistData(id, false, *c.client)
-	body, err := c.httpPostBodyBytes(ctx, "https://www.youtube.com/youtubei/v1/browse?key="+c.client.key, data)
+	body, err := c.httpPostBodyBytes(ctx, "https://www.youtube.com/youtubei/v1/browse?key="+c.client.Key, data)
 	if err != nil {
 		return nil, err
 	}
@@ -499,7 +499,7 @@ func (c *Client) GetStreamURLContext(ctx context.Context, video *Video, format *
 	c.assureClient()
 
 	if format.URL != "" {
-		if c.client.androidVersion > 0 {
+		if c.client.AndroidVersion > 0 {
 			return format.URL, nil
 		}
 
@@ -528,7 +528,7 @@ func (c *Client) httpDo(req *http.Request) (*http.Response, error) {
 		client = http.DefaultClient
 	}
 
-	req.Header.Set("User-Agent", c.client.userAgent)
+	req.Header.Set("User-Agent", c.client.UserAgent)
 	req.Header.Set("Origin", "https://youtube.com")
 	req.Header.Set("Sec-Fetch-Mode", "navigate")
 
@@ -606,7 +606,7 @@ func (c *Client) httpPost(ctx context.Context, url string, body interface{}) (*h
 	}
 
 	req.Header.Set("X-Youtube-Client-Name", "3")
-	req.Header.Set("X-Youtube-Client-Version", c.client.version)
+	req.Header.Set("X-Youtube-Client-Version", c.client.Version)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
 
